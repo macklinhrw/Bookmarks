@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    width: 350px;
+    height: 450px;
+    @apply bg-slate-500;
+    @apply text-white;
+  }
+}

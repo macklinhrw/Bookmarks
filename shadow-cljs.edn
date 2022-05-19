@@ -1,0 +1,12 @@
+;; shadow-cljs configuration
+{:source-paths
+ ["src/clojure/src/main"]
+
+ :dependencies
+ []
+
+ :builds
+ {:lib
+  {:target :node-library
+   :output-to "src/clojure/bundle/clojure.js"
+   :exports-var hello/exports}}}

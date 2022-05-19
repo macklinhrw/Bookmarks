@@ -1,0 +1,10 @@
+{
+  "watch": [
+    "src", "utils", "vite.config.ts"
+  ],
+  "ext": "tsx,css,html,ts,svelte,js",
+  "ignore": [
+    "src/**/*.spec.ts"
+  ],
+  "exec": "pnpm vite build"
+}

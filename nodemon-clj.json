@@ -1,0 +1,7 @@
+{
+  "watch": [
+    "src/clojure"
+  ],
+  "ext": "cljs,edn",
+  "exec": "pnpm clj:build"
+}
