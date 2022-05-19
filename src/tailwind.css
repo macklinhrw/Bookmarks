@@ -6,7 +6,7 @@
   :root {
     width: 350px;
     height: 450px;
-    @apply bg-slate-500;
+    @apply bg-slate-700;
     @apply text-white;
   }
 }

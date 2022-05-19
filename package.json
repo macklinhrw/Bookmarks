@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon",
-    "dev:p": "nodemon --config nodemon-ts.json & nodemon --config nodemon-clj.json & pnpm shadow-cljs clj-repl",
+    "dev:ts": "nodemon --config nodemon-ts.json",
+    "repl": "pnpm shadow-cljs clj-repl",
+    "dev:p": "nodemon --config nodemon-ts.json & nodemon --config nodemon-clj.json",
     "build": "pnpm clj:build && vite build",
     "preview": "vite preview",
     "clj:dev": "shadow-cljs watch lib",
@@ -29,5 +31,8 @@
     "tslib": "^2.4.0",
     "typescript": "^4.6.4",
     "vite": "^2.9.9"
+  },
+  "dependencies": {
+    "datascript": "^1.3.13"
   }
 }

@@ -2,7 +2,7 @@
   "watch": [
     "src", "utils", "vite.config.ts"
   ],
-  "ext": "tsx,css,html,ts,svelte,js",
+  "ext": "tsx,css,html,ts,svelte,js,cjs",
   "ignore": [
     "src/**/*.spec.ts"
   ],
