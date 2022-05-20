@@ -9,4 +9,6 @@
  {:lib
   {:target :node-library
    :output-to "src/clojure/bundle/clojure.cjs"
+   :compiler-options {:externs ["datascript/externs.js"]}
+   :source-map true
    :exports-var hello/exports}}}

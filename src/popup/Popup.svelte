@@ -1,7 +1,6 @@
 <script lang="ts">
   import '@src/index.css'
-  import clj from "@src/popup/clojure"
-  console.log(clj.bookmark())
+  console.log("inside popup")
 </script>
 
 <main>
