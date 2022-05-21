@@ -2,7 +2,8 @@
   (:require 
     [datascript.core :as d]
     [clojure.walk :as walk]
-    [goog.object :as go]))
+    [goog.object :as go]
+    [clojure.pprint :as p]))
 
 ; Code from https://github.com/tonsky/datascript/blob/master/src/datascript/js.cljs
 ; Javascript API and conversions
@@ -132,16 +133,27 @@
 (defn query-chromeid [id]
   (let [result (d/q id-chromeidq (d/db conn) id)] result))
 
+(defn find-id [chromeid]
+  (let [result (query-chromeid chromeid)]
+    (-> (take 1 result)
+        first
+        first)))
+
 (defn add-bookmark [title url chromeid]
   (d/transact! conn [{:db/id -1 :title title :url url :chromeid chromeid}]))
 
 (defn remove-bookmark [chromeid]
-  (let [result (query-chromeid chromeid)]
-    (d/transact! conn [{:db/restractEntity 1}])))
+  (let [result (find-id chromeid)]
+    (if (some? result)
+      (d/transact! conn [[:db/retractEntity result]])
+      (print "Bookmark with chromeid" chromeid "doesn't exist"))))
+
+(remove-bookmark (find-id "111"))
+(add-bookmark "test" "test" "111")
+(query-chromeid "111")
+(remove-bookmark "111")
 
 (db-init)
-(add-bookmark "test" "test.com" "111")
-(query-chromeid "111")
 
 (def exports #js {:queryTitbe query-title
                   :queryUrl query-url
@@ -149,5 +161,7 @@
                   :conn conn
                   :items items
                   :init db-init
-                  :query query})
+                  :query query
+                  :addBookmark add-bookmark
+                  :removeBookmark remove-bookmark})
 
