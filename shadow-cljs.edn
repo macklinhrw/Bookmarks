@@ -3,12 +3,19 @@
  ["src/clojure/src/main"]
 
  :dependencies
- [[datascript "1.3.13"]]
+ [[datascript "1.3.13"]
+  [cider/cider-nrepl "0.24.0"]]
 
  :builds
  {:lib
   {:target :node-library
    :output-to "src/clojure/bundle/clojure.cjs"
+   :compiler-options {:externs ["datascript/externs.js"]}
+   :source-map true
+   :exports-var hello/exports}
+  :dev
+  {:target :node-library
+   :output-to "src/clojure/bundle/dev.cjs"
    :compiler-options {:externs ["datascript/externs.js"]}
    :source-map true
    :exports-var hello/exports}}}

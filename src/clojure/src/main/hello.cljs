@@ -1,6 +1,76 @@
 (ns hello
   (:require 
-    [datascript.core :as d]))
+    [datascript.core :as d]
+    [clojure.walk :as walk]
+    [goog.object :as go]))
+
+; Code from https://github.com/tonsky/datascript/blob/master/src/datascript/js.cljs
+; Javascript API and conversions
+
+(defn- keywordize [s]
+  (if (and (string? s) (= (subs s 0 1) ":"))
+    (keyword (subs s 1))
+    s))
+
+(defn- schema->clj [schema]
+  (->> (js->clj schema)
+       (reduce-kv
+         (fn [m k v] (assoc m k (walk/postwalk keywordize v))) {})))
+
+(declare entities->clj)
+
+(defn- entity-map->clj [e]
+  (walk/postwalk
+    (fn [form]
+      (if (and (map? form) (contains? form ":db/id"))
+        (-> form
+            (dissoc ":db/id")
+            (assoc  :db/id (get form ":db/id")))
+        form))
+    e))
+
+(defn- entity->clj [e]
+  (cond
+    (map? e)
+    (entity-map->clj e)
+
+    (= (first e) ":db.fn/call")
+    (let [[_ f & args] e]
+      (concat [:db.fn/call (fn [& args] (entities->clj (apply f args)))] args))
+
+    (sequential? e)
+    (let [[op & entity] e]
+      (concat [(keywordize op)] entity))))
+
+(defn- entities->clj [entities]
+  (->> (js->clj entities)
+       (map entity->clj)))
+
+(defn- tempids->js [tempids]
+  (let [obj (js-obj)]
+    (doseq [[k v] tempids]
+      (go/set obj (str k) v))
+    obj))
+
+(defn- tx-report->js [report]
+  #js { :db_before (:db-before report)
+        :db_after  (:db-after report)
+        :tx_data   (->> (:tx-data report) into-array)
+        :tempids   (tempids->js (:tempids report))
+        :tx_meta   (:tx-meta report) })
+
+(defn js->Datom [d]
+  (if (array? d)
+    (d/datom (aget d 0) (aget d 1) (aget d 2) (or (aget d 3) d/tx0) (or (aget d 4) true))
+    (d/datom (.-e d) (.-a d) (.-v d) (or (.-tx d) d/tx0) (or (.-added d) true))))
+
+(defn- pull-result->js
+  [result]
+  (->> result
+       (walk/postwalk #(if (keyword? %) (str %) %))
+       clj->js))
+
+; End conversions
 
 
 (def conn (d/create-conn))
@@ -28,6 +98,17 @@
               [(re-find ?rp ?url)]
               [?e :title ?title]])
 
+(def searchq   '[:find ?e ?title ?url :in $ ?pattern :where 
+                 (or [?e :url ?field]
+                     [?e :title ?field])
+                 [(str "(?i)" ?pattern) ?np]
+                 [(re-pattern ?np) ?rp]
+                 [(re-find ?rp ?field)]
+                 [?e :title ?title]
+                 [?e :url ?url]])
+
+(def id-chromeidq  '[:find ?e :in $ ?id :where [?e :chromeid ?id]])
+
 (defn query-title [title]
   (let [result (d/q titleq (d/db conn) title)]
     (clj->js result)))
@@ -36,15 +117,37 @@
   (let [result (d/q urlq (d/db conn) url)]
     (clj->js result)))
 
-(defn transact [item]
-  (d/transact! conn item))
+(defn query [url]
+  (let [result (d/q searchq (d/db conn) url)]
+    (clj->js result)))
+
+(defn transact [conn entities & [tx-meta]]
+  (let [entities (entities->clj entities)
+        report   (-> (d/-transact! conn entities tx-meta)
+                     tx-report->js)]
+    (doseq [[_ callback] @(:listeners (meta conn))]
+      (callback report))
+    report))
+
+(defn query-chromeid [id]
+  (let [result (d/q id-chromeidq (d/db conn) id)] result))
+
+(defn add-bookmark [title url chromeid]
+  (d/transact! conn [{:db/id -1 :title title :url url :chromeid chromeid}]))
+
+(defn remove-bookmark [chromeid]
+  (let [result (query-chromeid chromeid)]
+    (d/transact! conn [{:db/restractEntity 1}])))
 
 (db-init)
+(add-bookmark "test" "test.com" "111")
+(query-chromeid "111")
 
-(def exports #js {:queryTitle query-title
+(def exports #js {:queryTitbe query-title
                   :queryUrl query-url
                   :transact transact
                   :conn conn
                   :items items
-                  :init db-init})
+                  :init db-init
+                  :query query})
 

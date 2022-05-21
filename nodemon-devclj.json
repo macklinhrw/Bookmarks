@@ -1,0 +1,4 @@
+{
+  "watch": ["src/clojure/bundle/dev.js"],
+  "exec": ["node src/clojure/bundle/dev.cjs"]
+}

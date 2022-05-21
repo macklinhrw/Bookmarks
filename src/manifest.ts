@@ -12,10 +12,11 @@ const manifest: ManifestType = {
     default_icon: "icon-34.png",
   },
   icons: {
+    "128": "icon-128.png",
   },
   web_accessible_resources: [
     {
-      resources: [],
+      resources: ["icon-128.png", "icon-34.png"],
       matches: [],
     },
   ],
@@ -26,7 +27,7 @@ const manifest: ManifestType = {
     "contextMenus",
     "notifications",
     "bookmarks",
-  ]
+  ],
 };
 
 export default manifest;

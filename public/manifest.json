@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "sveltetest",
-  "version": "1.0.0",
-  "description": "",
+  "name": "Sysno Bookmarks",
+  "version": "0.6",
+  "description": "Bookmark search engine and database",
   "background": {
     "service_worker": "src/background/index.js",
     "type": "module"
@@ -11,10 +11,15 @@
     "default_popup": "src/popup/index.html",
     "default_icon": "icon-34.png"
   },
-  "icons": {},
+  "icons": {
+    "128": "icon-128.png"
+  },
   "web_accessible_resources": [
     {
-      "resources": [],
+      "resources": [
+        "icon-128.png",
+        "icon-34.png"
+      ],
       "matches": []
     }
   ],

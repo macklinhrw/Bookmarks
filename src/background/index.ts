@@ -134,7 +134,7 @@ import clj from "@clj/clojure.cjs";
 //  })
 //}
 const handleQuery = (request: Message, sendResponse: any) => {
-  let results = clj.queryTitle(request.payload);
+  let results = clj.query(request.payload);
   let response: Message = { type: MessageType.QUERY, payload: results };
   console.log("Message contents:", request.payload);
   sendResponse(response);

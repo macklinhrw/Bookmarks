@@ -1,10 +1,6 @@
 {
-  "watch": [
-    "src", "utils", "vite.config.ts"
-  ],
-  "ext": "tsx,css,html,ts,svelte,js,cjs",
-  "ignore": [
-    "src/**/*.spec.ts"
-  ],
+  "watch": ["src", "utils", "vite.config.ts", "src/clojure/bundle/clojure.cjs"],
+  "ext": "tsx,css,html,ts,svelte,js",
+  "ignore": ["src/**/*.spec.ts"],
   "exec": "pnpm vite build"
 }

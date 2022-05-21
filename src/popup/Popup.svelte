@@ -5,7 +5,7 @@
 
   let results: any = [];
   let search: any = "";
-  let input: any;
+  let input: any = "";
 
   const handleInput = () => {
     let message: Message = { type: MessageType.QUERY, payload: search };
@@ -27,7 +27,7 @@
 <main>
   <div class="my-4 mx-2">
     <input
-      class="focus:outline-none focus:ring-blue-400 focus:ring-2 bg-slate-400 p-1 rounded w-full"
+      class="focus:outline-none focus:ring-blue-400 focus:ring-2 bg-slate-400 p-1 rounded w-full placeholder:text-gray-300"
       bind:value={search}
       on:input={handleInput}
       bind:this={input}
