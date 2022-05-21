@@ -9,6 +9,8 @@ specifiers:
   nodemon: ^2.0.16
   postcss: ^8.4.14
   postcss-nested: ^5.0.6
+  prettier: ^2.6.2
+  prettier-plugin-svelte: ^2.7.0
   sass: ^1.51.0
   shadow-cljs: ^2.19.0
   svelte: ^3.48.0
@@ -30,6 +32,8 @@ devDependencies:
   nodemon: 2.0.16
   postcss: 8.4.14
   postcss-nested: 5.0.6_postcss@8.4.14
+  prettier: 2.6.2
+  prettier-plugin-svelte: 2.7.0_kkjbqzpydplecjtkxrgomroeru
   sass: 1.51.0
   shadow-cljs: 2.19.0
   svelte: 3.48.0
@@ -1612,6 +1616,22 @@ packages:
   /prepend-http/2.0.0:
     resolution: {integrity: sha1-6SQ0v6XqjBn0HN/UAddBo8gZ2Jc=}
     engines: {node: '>=4'}
+    dev: true
+
+  /prettier-plugin-svelte/2.7.0_kkjbqzpydplecjtkxrgomroeru:
+    resolution: {integrity: sha512-fQhhZICprZot2IqEyoiUYLTRdumULGRvw0o4dzl5jt0jfzVWdGqeYW27QTWAeXhoupEZJULmNoH3ueJwUWFLIA==}
+    peerDependencies:
+      prettier: ^1.16.4 || ^2.0.0
+      svelte: ^3.2.0
+    dependencies:
+      prettier: 2.6.2
+      svelte: 3.48.0
+    dev: true
+
+  /prettier/2.6.2:
+    resolution: {integrity: sha512-PkUpF+qoXTqhOeWL9fu7As8LXsIUZ1WYaJiY/a7McAQzxjk82OF0tibkFXVCDImZtWxbvojFjerkiLb0/q8mew==}
+    engines: {node: '>=10.13.0'}
+    hasBin: true
     dev: true
 
   /process-nextick-args/2.0.1:
