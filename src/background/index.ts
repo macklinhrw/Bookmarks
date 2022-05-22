@@ -136,6 +136,13 @@ export interface Bookmark {
   title: string;
 }
 
+export interface searchResult {
+  id: number;
+  title: string;
+  url: string;
+  isFolder: boolean;
+}
+
 const recursivelyPopulateBookmarks = (bookmarks: [Bookmark]) => {
   bookmarks.forEach((b) => {
     //console.log(b);
@@ -169,7 +176,16 @@ importBookmarks();
 
 const handleQuery = (request: Message, sendResponse: any) => {
   let results = clj.query(request.payload);
-  let response: Message = { type: MessageType.QUERY, payload: results };
+  let resultsMap = results.map((result) => {
+    let obj: searchResult = {
+      id: result[0],
+      title: result[1],
+      url: result[2],
+      isFolder: result[3],
+    };
+    return obj;
+  });
+  let response: Message = { type: MessageType.QUERY, payload: resultsMap };
   console.log("Message contents:", request.payload);
   sendResponse(response);
 };

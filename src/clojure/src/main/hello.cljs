@@ -99,14 +99,15 @@
               [(re-find ?rp ?url)]
               [?e :title ?title]])
 
-(def searchq   '[:find ?e ?title ?url :in $ ?pattern :where 
+(def searchq   '[:find ?e ?title ?url ?isFolder :in $ ?pattern :where 
                  (or [?e :url ?field]
                      [?e :title ?field])
                  [(str "(?i)" ?pattern) ?np]
                  [(re-pattern ?np) ?rp]
                  [(re-find ?rp ?field)]
                  [?e :title ?title]
-                 [?e :url ?url]])
+                 [?e :url ?url]
+                 [?e :isFolder ?isFolder]])
 
 (def id-chromeidq  '[:find ?e :in $ ?id :where [?e :chromeid ?id]])
 
@@ -120,7 +121,7 @@
 
 (defn query [url]
   (let [result (d/q searchq (d/db conn) url)]
-    (clj->js result)))
+    (clj->js (take 50 result))))
 
 (defn query-chromeid [id]
   (let [result (d/q id-chromeidq (d/db conn) id)] result))
