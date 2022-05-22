@@ -122,14 +122,6 @@
   (let [result (d/q searchq (d/db conn) url)]
     (clj->js result)))
 
-(defn transact [conn entities & [tx-meta]]
-  (let [entities (entities->clj entities)
-        report   (-> (d/-transact! conn entities tx-meta)
-                     tx-report->js)]
-    (doseq [[_ callback] @(:listeners (meta conn))]
-      (callback report))
-    report))
-
 (defn query-chromeid [id]
   (let [result (d/q id-chromeidq (d/db conn) id)] result))
 
@@ -139,8 +131,9 @@
         first
         first)))
 
-(defn add-bookmark [title url chromeid]
-  (d/transact! conn [{:db/id -1 :title title :url url :chromeid chromeid}]))
+(defn add-bookmark [title url chromeId chromeDateAdded chromeParentId isFolder tag notes]
+  (d/transact! conn [{:db/id -1 :title title :url url :chromeId chromeId :chromeDataAdded chromeDateAdded 
+                      :chromeParentId chromeParentId :isFolder isFolder :tag tag :notes notes }]))
 
 (defn remove-bookmark [chromeid]
   (let [result (find-id chromeid)]
@@ -148,19 +141,10 @@
       (d/transact! conn [[:db/retractEntity result]])
       (print "Bookmark with chromeid" chromeid "doesn't exist"))))
 
-(remove-bookmark (find-id "111"))
-(add-bookmark "test" "test" "111")
-(query-chromeid "111")
-(remove-bookmark "111")
-
-(db-init)
-
-(def exports #js {:queryTitbe query-title
+(def exports #js {:queryTitle query-title
                   :queryUrl query-url
-                  :transact transact
                   :conn conn
                   :items items
-                  :init db-init
                   :query query
                   :addBookmark add-bookmark
                   :removeBookmark remove-bookmark})

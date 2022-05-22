@@ -7,6 +7,6 @@
     width: 350px;
     height: 450px;
     @apply bg-slate-700;
-    @apply text-white;
+    @apply text-gray-300;
   }
 }

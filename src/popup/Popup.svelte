@@ -25,17 +25,25 @@
 </script>
 
 <main>
-  <div class="my-4 mx-2">
+  <div class="my-2 mx-1">
     <input
-      class="focus:outline-none focus:ring-blue-400 focus:ring-2 bg-slate-400 p-1 rounded w-full placeholder:text-gray-300"
+      class="focus:outline-none focus:ring-blue-400 focus:ring-2 bg-slate-500 p-1 rounded w-full placeholder:text-gray-300"
       bind:value={search}
       on:input={handleInput}
       bind:this={input}
       placeholder="Enter a title or url here"
     />
-    <div class="space-y-2 mt-2">
+    <div class="space-y-1 mt-2 pb-1">
       {#each results as result}
-        <p>{result}</p>
+        <div
+          class="flex h-10 p-1 bg-slate-800 hover:bg-slate-900 hover:transition-colors
+                 border-2 border-black rounded hover:cursor-pointer"
+          on:click={() => chrome.tabs.create({ url: result[2] })}
+        >
+          <div class="flex w-5/6 my-auto">
+            <p class="p-1 truncate">{result[1]}</p>
+          </div>
+        </div>
       {/each}
     </div>
   </div>

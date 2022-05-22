@@ -1,17 +1,8 @@
-import { MessageType, type Message } from "@src/messages";
+import { MessageType } from "@src/messages";
+import type { Message } from "@src/messages";
 import clj from "@clj/clojure.cjs";
 
 //import d from 'datascript'
-//export interface Bookmark {
-//  children?: Bookmark[];
-//  dateAdded: number;
-//  id?: string;
-//  index?: number;
-//  parentId?: number;
-//  dateGroupModified?: number;
-//  url?: string;
-//  title: string;
-//}
 //
 //let schema = {
 //  ':bookmark/url': {},
@@ -133,6 +124,49 @@ import clj from "@clj/clojure.cjs";
 //    resolve(conn)
 //  })
 //}
+
+export interface Bookmark {
+  children?: [Bookmark];
+  dateAdded: number;
+  id?: string;
+  index?: number;
+  parentId?: number;
+  dateGroupModified?: number;
+  url?: string;
+  title: string;
+}
+
+const recursivelyPopulateBookmarks = (bookmarks: [Bookmark]) => {
+  bookmarks.forEach((b) => {
+    //console.log(b);
+    let parent = b.parentId;
+    if (!b.parentId) parent = -1;
+    if (b.children) {
+      clj.addBookmark(b.title, "", b.id!, b.dateAdded, parent!, true, "", "");
+      recursivelyPopulateBookmarks(b.children);
+    } else {
+      clj.addBookmark(
+        b.title,
+        b.url!,
+        b.id!,
+        b.dateAdded,
+        parent!,
+        false,
+        "",
+        ""
+      );
+    }
+  });
+};
+
+const importBookmarks = () => {
+  chrome.bookmarks.getTree((bookmarks) => {
+    recursivelyPopulateBookmarks(bookmarks as [Bookmark]);
+  });
+};
+
+importBookmarks();
+
 const handleQuery = (request: Message, sendResponse: any) => {
   let results = clj.query(request.payload);
   let response: Message = { type: MessageType.QUERY, payload: results };
