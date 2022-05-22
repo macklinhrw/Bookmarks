@@ -28,6 +28,10 @@
     });
   };
 
+  // TODO: Cache results anticipating navigation back
+  // if popup is closed on bookmarkview, clear the cache
+  // this could make the scroll not have to wait for query results
+  // which is a little jarring if the query isn't fast
   afterUpdate(() => {
     if (!scrolled && params.scrollPos) {
       console.log("attempting to scroll to", params.scrollPos);
