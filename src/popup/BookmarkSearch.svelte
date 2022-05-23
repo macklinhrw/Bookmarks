@@ -8,10 +8,12 @@
   import type { Message } from "@src/messages";
   import { afterUpdate, onMount } from "svelte";
 
-  let results: [searchResult] = [] as any;
+  let results: searchResult[] = [];
   let search: any = "";
   let input: any = "";
   let scrolled = false;
+  let expanded: number[] = [];
+  let collapsed = -1;
 
   const handleInput = () => {
     let message: Message = { type: MessageType.QUERY, payload: search };
@@ -28,6 +30,14 @@
     });
   };
 
+  const getLinkBoxStyle = (id: number) => {
+    let h = "h-10";
+    if (expanded.includes(id)) h = "";
+    console.log(expanded, id);
+    return `flex ${h} p-1 bg-slate-800 hover:bg-slate-900 hover:transition-colors
+            border-2 border-black rounded hover:cursor-pointer`;
+  };
+
   // TODO: Cache results anticipating navigation back
   // if popup is closed on bookmarkview, clear the cache
   // this could make the scroll not have to wait for query results
@@ -39,6 +49,20 @@
       if (window.scrollY == params.scrollPos) scrolled = true;
     }
   });
+
+  const handleExpand = (e: any, id: number) => {
+    e.stopPropagation();
+    expanded = [...expanded, id];
+  };
+  const handleCollapse = (e: any, id: number) => {
+    e.stopPropagation();
+    const index = expanded.indexOf(id);
+    if (index > -1) {
+      expanded.splice(index, 1);
+      expanded = expanded;
+      collapsed = id;
+    }
+  };
 
   onMount(() => {
     if (params.query) {
@@ -67,32 +91,83 @@
     <div class="space-y-1 mt-2 pb-1">
       {#each results as result}
         {#if !result.isFolder}
-          <div
-            class="flex h-10 p-1 bg-slate-800 hover:bg-slate-900 hover:transition-colors
-                 border-2 border-black rounded hover:cursor-pointer"
-            on:click={() => chrome.tabs.create({ url: result.url })}
-          >
-            <div class="flex w-5/6 my-auto">
-              <p class="p-1 truncate">{result.title}</p>
-            </div>
-            <div class="flex ml-auto my-auto space-x-1">
-              <div
-                on:click={(e) => {
-                  e.stopPropagation();
-                  if (search == "") {
-                    push(`/view/${result.id}/${window.scrollY}`);
-                  } else {
-                    push(`/view/${result.id}/${window.scrollY}/${search}`);
-                  }
-                }}
-              >
-                <Gear />
+          {#if !expanded.includes(result.id)}
+            <div
+              class="flex h-10 p-1 bg-slate-800 hover:bg-slate-900 hover:transition-colors
+            border-2 border-black rounded hover:cursor-pointer"
+              on:click={() => chrome.tabs.create({ url: result.url })}
+            >
+              <div class="flex w-5/6 my-auto">
+                <p class="p-1 truncate">{result.title}</p>
               </div>
-              <div>
-                <ArrowDown />
+              <div class="flex ml-auto my-auto space-x-1">
+                <div
+                  on:click={(e) => {
+                    e.stopPropagation();
+                    if (search == "") {
+                      push(`/view/${result.id}/${window.scrollY}`);
+                    } else {
+                      push(`/view/${result.id}/${window.scrollY}/${search}`);
+                    }
+                  }}
+                >
+                  <Gear />
+                </div>
+                {#if result.id == collapsed}
+                  <div
+                    class="animate-arrowr"
+                    on:click={(e) => {
+                      handleExpand(e, result.id);
+                    }}
+                  >
+                    <ArrowDown />
+                  </div>
+                {:else}
+                  <div
+                    on:click={(e) => {
+                      handleExpand(e, result.id);
+                    }}
+                  >
+                    <ArrowDown />
+                  </div>
+                {/if}
               </div>
             </div>
-          </div>
+          {:else}
+            <div
+              class="flex min-h-10 p-1 bg-slate-800 hover:bg-slate-900 hover:transition-colors
+            border-2 border-black rounded hover:cursor-pointer"
+              on:click={() => chrome.tabs.create({ url: result.url })}
+            >
+              <div class="flex w-5/6 my-auto max-h-24">
+                <p class="p-1 overflow-ellipsis overflow-hidden">
+                  {result.title}
+                </p>
+              </div>
+              <div class="flex ml-auto my-auto space-x-1">
+                <div
+                  on:click={(e) => {
+                    e.stopPropagation();
+                    if (search == "") {
+                      push(`/view/${result.id}/${window.scrollY}`);
+                    } else {
+                      push(`/view/${result.id}/${window.scrollY}/${search}`);
+                    }
+                  }}
+                >
+                  <Gear />
+                </div>
+                <div
+                  on:click={(e) => {
+                    handleCollapse(e, result.id);
+                  }}
+                  class="animate-arrow"
+                >
+                  <ArrowDown />
+                </div>
+              </div>
+            </div>
+          {/if}
         {:else}
           <div
             class="flex h-10 p-1 bg-slate-800 hover:bg-slate-900 hover:transition-colors
@@ -108,7 +183,13 @@
             </div>
             <div class="flex ml-auto my-auto space-x-1">
               <Gear />
-              <ArrowDown />
+              <div
+                on:click={(e) => {
+                  handleExpand(e, result.id);
+                }}
+              >
+                <ArrowDown />
+              </div>
             </div>
           </div>
         {/if}
