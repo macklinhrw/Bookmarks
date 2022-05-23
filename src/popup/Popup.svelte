@@ -8,7 +8,7 @@
   };
 </script>
 
-<main>
+<main class="w-80 h-96 max-h-96 overflow-x-hidden overflow-y-auto">
   <Router {routes} />
 </main>
 

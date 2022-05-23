@@ -4,8 +4,6 @@
 
 @layer base {
   :root {
-    width: 350px;
-    height: 450px;
     @apply bg-slate-700;
     @apply text-gray-300;
   }

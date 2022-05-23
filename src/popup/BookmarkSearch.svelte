@@ -80,7 +80,7 @@
 </script>
 
 <main>
-  <div class="my-2 mx-1">
+  <div class="my-2 mx-1 ">
     <input
       class="focus:outline-none focus:ring-blue-400 focus:ring-2 bg-slate-500 p-1 rounded w-full placeholder:text-gray-300"
       bind:value={search}
